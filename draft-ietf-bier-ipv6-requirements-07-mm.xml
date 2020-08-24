@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 <?rfc toc="yes"?>
 <?rfc tocompact="yes"?>
@@ -183,7 +183,7 @@ Verizon Inc.
     
       <section title="Transport-Independent Model">
       <t>The first conceptual model is a Transport-Independent Model that views IP tunnels
-      as links of BIER, and views BIER as an independent "Layer-2.5". </t>
+      as links of BIER, and views BIER as an independent "Layer-2.5" technology. </t>
       <t><figure align="left">
           <artwork><![CDATA[      
       |<----------(L2.5 BIER(P2MP) Tunnel)-------->|
@@ -193,7 +193,6 @@ Verizon Inc.
   +------+       +-------+       +-----+        +------+
   | BFIR |-------|Non-BFR|-------| BFR |--------| BFER |
   +------+       +-------+       +-----+        +------+
-
   ------- physical link 
     
   ~~~~~~~ IPv6(P2P) tunnel
@@ -219,24 +218,17 @@ Verizon Inc.
          
          <t>There may be, however, in certain cases some difficulty with allocation of an MPLS label 
          and advertisement through the control-plane.
-         For example, a simple inter-AS BIER deployment may want to use the 
-         auto-configuration of BIFT-id using Non-MPLS BIER encapsulation 
-         [RFC8296] as illustrated in <xref target="I-D.geng-bier-ipv6-inter-domain"/>.
+         Also, the BIER-MPLS over IPv6 tunnel is not the interest of working group to serve as an BIER IPv6 approach for development.
+         Instead, the interest of BIER over IPv6 tunnel is to use the "Non-MPLS BIER" over IPv6 tunnel.
          This brings the need of a new "Next Header" value to indicate the "Non-MPLS" BIER header. </t>
          
          <t>For IPv4/IPv6 GRE, the "Next Header" is the 16-bit "Protocol Type" field, and has adequate space for such requirement.</t>
          <t>For IPv4/IPv6 UDP, the "Next Header" is the 16-bit "Destination Port" field, and has adequate space for such requirement.</t>
          <t>For IPv4/IPv6, the "Next Header" is a 8-bit value and needs to be allocated from the "Assigned Internet Protocol Numbers" registry.</t>
-         
-        <t>Reassembly/Re-fragmentation of a packet has to be executed on each BFR in such case.
-        This may be common and even friendly for a protocol stack in a BFR software implementation, but 
-        it may impose cost for a BFR hardware implementation. </t>
-        <t>IPv6 functions that are expected to be executed from BFIR to BFER are assumed to be broken 
-        on the BFRs, for example, IPv6 Fragmentation/Assembly or IPSEC ESP. 
-        This is because the "IPv6 tunnel" and all its functions is "terminated" on the BFRs.
-        These functions, if desired, may need to be re-designed in the "Layer-2.5" BIER mode.</t>
         
-        <t>For deployment security, it is necessary to ensure the "BIER" packet is only using the allowed IPv6 tunnel.</t>
+        <t>This approach keeps the BIER function well as is, and does not expect much additional functions besides using IPv6 reachability for traversing through Non-BIER routers. </t>
+        <t>For example, IPv6 has its extensibility of fragmentation/IPsec using IPv6 extension headers between ingress PE and egress PE, 
+        while this mode does not intend to support such additional functions besides the functions that already defined in existing BIER encapsulation [RFC8296]. <t>
         
       </section>
       
@@ -260,7 +252,7 @@ Verizon Inc.
         BFIR and BFERs work as IPv6 (P2MP) tunnel endpoints, and BFRs 
         work as IPv6 segment endpoints. On each BFR, the segment endpoint 
         behaviour of IPv6 data plane is executed, and there is no decapsulation 
-        of receiving IPv6 tunnel and encapsulation of new IPv6 tunnel for sending. </t>
+        of receiving IPv6 tunnel and re-encapsulation of new IPv6 tunnel for sending. </t>
         
         <t>In this mode, the BIER header is integrated into the IPv6 extension header and processing of 
          the BIER header (e.g., the BitString) is implemented as part of the IPv6 extension header processing. 
@@ -275,9 +267,22 @@ Verizon Inc.
          and capability of integrating the functions of the IPv6 data plane.</t>
          
          <t>This model typically needs an extension to IPv6 data plane, with an IPv6 extension header or Option introduced. </t>
-         <t>IPv6 functions that are expected to be executed from BFIR to BFER is 
-         supported if correctly designed, for example, IPv6 Fragmentation/Assembly or IPSEC ESP.</t>
-         <t>For deployment security, it is necessary to ensure the "BIER" packet is in a trusted IPv6-based domain.</t>
+         <t>General considerations of this approach is to leverage the IPv6 features in addition to the BIER function. There are some examples.<t>
+         <t>1. IPv6 Fragmentation/Assembly could be supported as an additional function to the BIER-MTU defined in RFC8296. </t>
+         <t>A customer IPv6 multicast packet may be 1280 bytes and is required to be transported through a BIER IPv6 domain, 
+         and the BIER-MTU of the same BIER IPv6 domain is 1280 bytes (where every link of the domain is no less than the IPv6-required 1280 bytes).
+         In this case, the BFIR receiving the customer IPv6 multicast packet could encapsulate with BIER, and fragment it into two packets.
+         The two packets could be transported to BFERs, and be assembled into one packet on each BFERs. 
+         </t>
+         <t>2. IPSEC ESP could be supported as an additional security mechanism for BIER multipoint transport.</t>
+         <t>The BFIR receiving the customer multicast packet could encapsulate with ESP header, and further encapsulated with BIER and IPv6 header using the IPv6 next header chain.
+         The BFER receiving the packet with IPv6 next header chain indicating an ESP encapsulation, it obtains the customer multicast packet and forwarding it.</t>
+         <t>3. IPv6 source address is used as BIER packet source-origin identifier and simplify the provisioning of BFR-id. </t>
+         <t>This provides additional extensibility, especially in inter-AS BIER deployment as illustrated in <xref target="I-D.geng-bier-ipv6-inter-domain"/>.
+         Suppose there are 65535 BFERs in a BIER sub-domain that needs to receive multicast flows from another router acting as BFIR, it could be supported in this approach.
+         The same applies if there are other 10, 100, or 1000 routers in additional to the 65535 BFERs, and it could be supported in this approach.
+         </t>
+         <t>These are not the exhaustive examples, but for explanation to understand the characteristic of this model.</t>
       </section>
       
      <section title="Encapsulation Approaches Considered">
@@ -458,8 +463,8 @@ Verizon Inc.
         defined in <xref target="RFC8296"/>) can be used to transport the
         multicast data in the IPv6 network by encapsulating the multicast user
         data payload within the BIER-ETH header. </t>
-		<t>Mixed use of BIER-ETH in a IPv6 solution is up to the solution 
-		and is outside the scope of this document.</t>
+        <t>Mixed use of BIER-ETH in a IPv6 solution is up to the solution 
+        and is outside the scope of this document.</t>
 
         <t/>
       </section>
