@@ -403,9 +403,9 @@
           </figure></t>
         
         <t>Another example of this model is defined in <xref target="I-D.xie-bier-ipv6-encapsulation"/>, where information required for BIER forwarding, 
-        e.g., the BIER header, is encoded in an Option TLV (indicated by a TLV Type to be allocated by IANA) of 
-        the IPv6 Destination Option Header. 
-		The BIER function is integrated in IPv6 extension header and its forwarding procedure, and the BIER payload is encapsulated as the IPv6 payload.</t>
+        e.g., the BIER header, is encoded in an Option TLV (indicated by an Option Type to be allocated by IANA) of 
+        the IPv6 Destination Option Header. The third-highest-order bit of the Option Type is set to 1 to allow Option Data (e.g., the BitString) change en route.
+        The BIER function is integrated in IPv6 extension header and its forwarding procedure, and the BIER payload is encapsulated as the IPv6 payload.</t>
 
         <t><figure>
             <artwork align="left"><![CDATA[
