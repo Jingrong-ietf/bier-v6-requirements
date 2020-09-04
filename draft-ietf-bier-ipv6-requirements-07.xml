@@ -31,7 +31,7 @@
       </address>
     </author>
     
-       <author fullname="Xuesong" initials="X" surname="Geng">
+       <author fullname="Xuesong Geng" initials="X" surname="Geng">
       <organization>Huawei</organization>
 
       <address>
@@ -134,11 +134,6 @@
 	  encapsulation, IPv6 encapsulation is not required, even though
 	  IPv6 encapsulation (native or GRE/UDP-like) may be used
 	  to transport BIER packets over some BIER-incapable routers.
-<!--
-      The challenge, in a non MPLS BIER environment with an IPv6 data plane, is that the L2.5 label stack, which includes the 
-      encoded BIER header, is now not present. The problem therefore is how, and where, to encode 
-      the BIER Header in a Layer 3 IPv6 environment.
--->
       </t>
       
       <t>Below is a simple scenario that needs BIER IPv6-based forwarding:</t>
@@ -160,13 +155,12 @@
         </figure></t>
 
       <t>This scenario depicts the need to replicate BIER packets from a
-      BFIR to BFERs across an IPv6 Service Provider core. <!--One use case, for BIER in the IPv6 core, is a stateless IP VPN overlay 
-      P2MP P-Tree provisioning using MVPN procedures for tree instantiation.-->  
+      BFIR to BFERs across an IPv6 Service Provider core.   
 	  Inside the IPv6 network, the BIER header is used to direct the packet from one BFR to the next BFRs, 
 	  and either IPv6 header or Ethernet header is used to provide reachability between BFRs.
 	  The IPv6 environment may include a variety of link types, may be entirely IPv6, 
 	  or may be dual stack. There may be cases where not all routers 
-	  are BFR capable in the IPv6 enviroment but still want to deploy BIER.
+	  are BFR capable in the IPv6 environment but still want to deploy BIER.
 	  Regardless of the environment, the problem is to deploy BIER in a non-MPLS IPv6 network.
       </t>
       
@@ -179,7 +173,7 @@
       <section title="Independent Model">
 		<t>The first conceptual model is an Independent Model, where IPv6
 		is nothing special to BIER but a transportation means that may be used
-		just like other transportioan means, and BIER is nothhing special to
+		just like other transportation means, and BIER is nothing special to
 		IPv6 but a payload type just like other payload types. </t>
       <t><figure align="left">
           <artwork><![CDATA[      
@@ -188,15 +182,16 @@
       |                                            |
       |<---------(L2.5 BIER(P2MP) Tunnel)--------->|
       |                                            |
-      |    +~~~~~~BIER~~~~~~~~+          +BIER+    |
+      |  TEP                  TEP      TEP    TEP  |
+      |    +~~~~~~~~~~~~~~~~~~+          +~~~~+    |
       |   /                    \        /      \   |  
-  +------+       +-------+       +-----+   or   +------+
-  | BFIR |-------|Non-BFR|-------| BFR |--BIER--| BFER |
+  +------+       +-------+       +-----+        +------+
+  | BFIR |-------|Non-BFR|-------| BFR |--------| BFER |
   +------+       +-------+       +-----+        +------+
 
   ------- L2 link 
     
-  ~~~~~~~ IPv6(P2P) tunnel
+  ~~~~~~~ IPv6(P2P) tunnel (TEP = Tunnel EndPoint)
   
   <-----> BIER(P2MP) tunnel
       ]]></artwork>
@@ -207,7 +202,7 @@
 		the receiving BFR removes the tunnel encapsulation.
         </t>
          
-        <t>The general considerations of this model is to keep BIER and IPv6
+        <t>General consideration of this model is to keep BIER and IPv6
 		independent of each other. The BIER header is not part of the IPv6
 		header but comes after the transport
 		header (L2 or tunnel header) and before BIER payload.</t>
@@ -224,12 +219,17 @@
       |                                            |
       |<----------(L3 BIER(P2MP) tunnel)---------->|
       |                                            |
+      |  SEP                 SEP       SEP    SEP  |
+      |    +~~~~~~~~~~~~~~~~~~+          +~~~~+    |
+      |   /                    \        /      \   |  
   +------+       +-------+       +-----+        +------+
   | BFIR |-------|Non-BFR|-------| BFR |--------| BFER |
   +------+       +-------+       +-----+        +------+
   
   ------- L2 link 
   
+  ~~~~~~~ IPv6(P2P) segment (SEP = Segment EndPoint)
+	
   <-----> BIER(P2MP) tunnel
       ]]></artwork>
         </figure></t>
@@ -244,29 +244,12 @@
          The IPv6 source address is the BIER packet source-origin identifier, and is unchanged through the 
          BIER domain from BFIR to BFERs. </t>
          
-         <t>General considerations of this model is to use the IPv6 extension capabilities to enable the BIER function, 
-         to smoothly facilitate new requirements that may emerge in an IPv6 network.</t>
+         <t>General consideration of this model is to use the IPv6 capabilities integrated, in addition to normal BIER function, 
+         to facilitate new requirements that may emerge in an IPv6 network.</t>
          
       </section>
 
-      <!--
-     <section title="Encapsulation Approaches">
-      <t> A number of BIER-IPv6 encapsulation approaches have been
-      investigated by the BIER Working Group.  This section divides these approaches 
-      into the two conceptual models.</t>
-       
-     <t>Independent Model approaches include: </t>
-       <t><list style="">
-       <t>BIERin6 <xref target="I-D.zhang-bier-bierin6"/>.</t>
-       </list></t>
-     <t></t>
-     <t>Integrated Model approaches include: </t>
-       <t><list style="">
-       <t>BIER-over-IPv6 <xref target="I-D.pfister-bier-over-ipv6"/>.</t>
-       <t>BIERv6 <xref target="I-D.xie-bier-ipv6-encapsulation"/>.</t>
-       </list></t>       
-     </section>
-     -->
+
     </section>
 
     <section title="Requirements">
@@ -291,8 +274,8 @@
       <t>Considering that these mandatory requirements are all well-known to the working group, and practical in normal deployment, 
       they will be listed without a detailed description.
       </t>
-      <section title="L2 Agnostic">
-        <t>The solution must be agnostic to the underlying L2 data link type.</t>
+      <section title="Support various L2 link types">
+        <t>The solution should support various kind of L2 data link types.</t>
       </section>
       
       <section title="Support BIER architecture">
@@ -301,13 +284,6 @@
         <t>Suppporting different multicast flow overlays, multiple sub-domains, multi-topologies,
 		multiple sets, multiple Bit String Lengths,
 		and deterministic ECMP are considered essential functions of BIER and need to be supported.</t>
-      </section>
-
-      <section title="Conform to existing IPv6 Spec">
-      <t>The proposed encapsulation must conform to the IPv6 specification and 
-          guidelines as described in RFC8200. If new extensions to existing
-          IPv6 specification are required, it needs to be discussed and 
-          approved by the 6man working group.</t>
       </section>
 
       <section title="Support deployment with Non-BFR routers">
@@ -326,20 +302,18 @@
       </section>
       
     <section title="Optional Requirements">
-      <t>The requirments in this section are listed as optional, and each requirement is explained with a detailed scenario.
+      <t>The requirements in this section are listed as optional, and each requirement is explained with a detailed scenario.
       </t>
       
       <section title="Support Fragmentation">
       <t>There are some cases where the Fragmentation/Assembly function is needed for BIER to work in an IPv6 network. </t>
-      <t>For example, a customer IPv6 multicast packet may be 1280 bytes and is required to be transported through an IPv6 network using BIER, 
-         and the BIER-MTU of the IPv6 network is about 1300 bytes. Every link of the domain is no less than the IPv6-required 
-         1280 bytes <xref target="RFC8200"/>, but is less than the required space to encapsulate the IPv6 c-multicast packet using BIER.
-         In this case, it is not the appropriate action for a BFIR to drop the packet and advertise an MTU to the source.
-         Instead, the appropriate action for a BFIR is to fragment the packet, and BIER imposing and processing should apply, in 
-         sequence, to each fragment <xref target="RFC8296"/>.
+      <t>For example, a customer IPv6 multicast packet may be 1280 bytes and is required to be transported through an IPv6 network using BIER. 
+         Every link of the IPv6 network is no less than the requisite 1280 bytes <xref target="RFC8200"/>, 
+         but the size of the payload that can be encapsulated in BIER (BIER-MTU) is less than 1280 bytes.
+         In this case, it is not the appropriate action for a BFIR to drop the packet and advertise an MTU to the source <xref target="RFC8296"/>. 
+         Instead, the IPv6 transport mechanism, either integrated with or independent to BIER, need to provide the fragmentation and assembly function.
       </t>
-  		<t>Jeffrey's comment: is c-muilticast for MVPN, or just flow overlay? Would the BFIR impose an additional IPv6 header, besides the "c-muilticast" IPv6 header?
-		</t>
+  		
       </section>
       
       <section title="Support IPSEC ESP">
@@ -372,7 +346,7 @@
     <section title="Acknowledgement">
       <t/>
 
-      <t>Thanks to Eric Rosen for his listed set of requirements on the
+      <t>Thanks to Eric Rosen for his listed set of initial requirements on the
       BIER WG mailing list.</t>
     </section>
   </middle>
@@ -400,17 +374,23 @@
     </references>
  
     <section title="List of Solutions">
-      <t>The following are solutions that have been proposed to solve BIER in
+      <t>There have been some proposed solutions for BIER in
       IPv6 environments. Some solutions propose encoding while others propose
       encapsulation. It is recommended for the wg to evaluate these solutions against
       the requirements listed previously in order to make informed decisions on solution 
       readiness.</t>
-
-      <t>As illustrated in these examples, the BIER header, or the BitString,
-      may appear after the L2/tunnel header, in the IPv6 Header, IPv6 Extension Header, IPv6 Payload, or
-      IPv6 Tunnel payload.</t>
-
-      <section title="Encode Bitstring in IPv6 destination address">
+      
+      <t>This section lists these solutions categorizing in the two conceptual models.</t>
+      
+      <section title="Integrated mode approach">
+        <t>One example of this model is defined in <xref target="I-D.pfister-bier-over-ipv6"/>, where the
+        information required for BIER forwarding, 
+        e.g., the BitString, is encoded in the low-order bits of the
+        IPv6 destination address of each packet. The high-order bits of the
+        IPv6 destination address are used by intermediate routers for unicast
+        forwarding, deciding whether a packet is a BIER packet, and if so, to
+        identify the BIER Sub-Domain, Set Identifier and BitString length.
+        The BIER function is integrated in the IPv6 header and its forwarding procedure, and the BIER payload is encapsulated as the IPv6 payload.</t>
         <t><figure>
             <artwork align="left"><![CDATA[
    +---------------+-------------------
@@ -421,25 +401,12 @@
    +---------------+-------------------
           ]]></artwork>
           </figure></t>
+        
+        <t>Another example of this model is defined in <xref target="I-D.xie-bier-ipv6-encapsulation"/>, where information required for BIER forwarding, 
+        e.g., the BIER header, is encoded in an Option TLV (indicated by a TLV Type to be allocated by IANA) of 
+        the IPv6 Destination Option Header. 
+		The BIER function is integrated in IPv6 extension header and its forwarding procedure, and the BIER payload is encapsulated as the IPv6 payload.</t>
 
-        <t>As described in <xref target="I-D.pfister-bier-over-ipv6"/>, The
-        information required by BIER is stored in the destination IPv6
-        address. The BIER BitString is encoded in the low-order bits of the
-        IPv6 destination address of each packet. The high-order bits of the
-        IPv6 destination address are used by intermediate routers for unicast
-        forwarding, deciding whether a packet is a BIER packet, and if so, to
-        identify the BIER Sub-Domain, Set Identifier and BitString length. No
-        additional extension or encapsulation header is required. Instead of
-        encapsulating the packet in IPv6, the payload is attached to the BIER
-        IPv6 header and the IPv6 protocol number is set to the type of the
-        payload. If the payload is UDP, the UDP checksum needs to change when
-        the BitString in the IPv6 destination address changes.</t>
-		<t>Jeffrey's comments - this does not have the encapsulation in
-		RFC8296, right? If so, should we consider it at all?
-		</t>
-      </section>
-
-      <section title="Add BIER header into IPv6 Extension Header ">
         <t><figure>
             <artwork align="left"><![CDATA[
    +---------------+-----------------+-------------------
@@ -451,58 +418,10 @@
           ]]></artwork>
           </figure></t>
 
-        <t>According to <xref target="RFC8200"/> In IPv6, optional
-        internet-layer information is encoded in separate headers that may be
-        placed between the IPv6 header and the upper- layer header in a
-        packet. There is a small number of such extension headers, each one
-        identified by a distinct Next Header value. An IPv6 packet may carry
-        zero, one, or more extension headers, each identified by the Next
-        Header field of the preceding header. Extension headers (except for
-        the Hop-by-Hop Options header) are not processed, inserted, or deleted
-        by any node along a packet's delivery path, until the packet reaches
-        the node (or each of the set of nodes, in the case of multicast)
-        identified in the Destination Address field of the IPv6 header. The
-        Hop-by-Hop Options header is not inserted or deleted, but may be
-        examined or processed by any node along a packet's delivery path,
-        until the packet reaches the node (or each of the set of nodes, in the
-        case of multicast) identified in the Destination Address field of the
-        IPv6 header. The Hop-by-Hop Options header, when present, must
-        immediately follow the IPv6 header. Its presence is indicated by the
-        value zero in the Next Header field of the IPv6 header.</t>
-
-        <t>Two of the currently-defined extension headers are the Hop-by-Hop
-        Options header and the Destination Options header which carry a
-        variable number of type-length-value (TLV) encoded "options".</t>
-
-        <t>In <xref target="I-D.xie-bier-ipv6-encapsulation"/> an IPv6 BIER
-        Destination Option is carried by the IPv6 Destination Option Header
-        (indicated by a Next Header value 60). It is initialized in a packet
-        sent by an IPv6 BFIR router to inform the following BFR routers in an
-        IPv6 BIER domain to replicate to destination BFER routers hop-by-hop.
-        BIER is generally a hop-by-hop and one-to-many architecture and it is
-        required for a BIER IPv6 encapsulation to include the BIER Header
-        ([RFC8296]) as an IPv6 Extension Header, to pilot the hop-by-hop BIER
-        replication.</t>
-
-        <t>Hop by hop Options Headers may be considered. The Hop-by-Hop
-        Options header is used to carry optional information that may be
-        examined and processed by every node along a packet's delivery path.
-        The Hop-by-Hop Options header is identified by a Next Header value of
-        0 in the IPv6 header.</t>
-
-        <t>Defining New Extension Headers and Options may also be considered,
-        if the IPv6 Destination Option Header is not good enough and new
-        extension headers can solve the problem better.</t>
-
-        <t>Such proposals may include requests to IANA to allocate a "BIER
-        Option" code from "Destination Options and Hop-by-Hop Options", and/or
-        a "BIER Option Header" code from "IPv6 Extension Header Types".</t>
       </section>
 
-      <section title="Transport BIER as L2/tunnel payload">
-		<t>The BIER architecture and encapsulation specifications assume
-		that the BIER header and BIER payload are together treated as the
-		payload after a L2 or tunnel header. This model is continued
+      <section title="Independent model approach">
+		<t>One example of this model is defined 
         in <xref target="I-D.zhang-bier-bierin6"/>, where the BIER header
 		and the payload following it are L2 payload when feasible (e.g.
 		when two BFRs are directly connected) or IPv6 payload when IPv6
