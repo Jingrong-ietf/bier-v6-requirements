@@ -97,13 +97,11 @@
       use of a multicast-specific BIER header. <xref target="RFC8296"/>
       defines two types of BIER encapsulation: one is
       BIER MPLS encapsulation for MPLS environments,
-	  the other is non-MPLS BIER encapsulation to run without MPLS.
-	  This document describes using
-      BIER in non-MPLS IPv6 environments. We explain the requirements of
-      transporting IPv4/IPv6 multicast overlay payload through an IPv6 network
-	  underlay using BIER. The solutions may require the use of IPv6
-	  forwarding plane and may include IPv6 encapsulation and/or generic
-	  IPv6 tunnelling. 
+      the other is non-MPLS BIER encapsulation for non-MPLS environments.
+      This document describes the need of using
+      BIER in non-MPLS IPv6 environments. We describe the problems that current non-MPLS encapsulation (with Ethernet transport) faces, 
+      explain the need for BIER IPv6 encapsulation, summarize the encapsulation modes of the proposed solutions, 
+      and detail the solution requirements to assist the working group in the development of acceptable solutions.  
       </t>
 
       <section anchor="requirements-language" title="Requirements Language">
@@ -128,15 +126,14 @@
 
     <section title="Problem Statement">
       
-      <t>The problem is how to transport BUM packets using BIER technology in an non-MPLS IPv6 environment.
-      With IPv6 encapsulation increasingly used for unicast services like VPN or L2VPN,
-      It may also be desired to have BIER deployments, for multicast services such as MVPN, using IPv6 encapsulation. On the other hand, since BIER has its own
-	  encapsulation, IPv6 encapsulation is not required, even though
-	  IPv6 encapsulation (native or GRE/UDP-like) may be used
-	  to transport BIER packets over some BIER-incapable routers.
-      </t>
+     <t><xref target="RFC8296"/> has defined two types of BIER encapsulation: one is
+       BIER MPLS encapsulation for MPLS environments, the other is non-MPLS BIER encapsulation for Non-MPLS environments.
+       Both the BIER MPLS encapsulation and non-MPLS BIER encapsulation can be applied to IPv4 or IPv6 networks.
+       For IPv6 network operators that prefer non-MPLS technology, the non-MPLS BIER encapsulation defined in [RFC8296] is a candidate choice without extra IPv6 encapsulation.
+       However, there are still some problems to be solved for this non-MPLS BIER encapsulation being deployed in some scenarios. 
+       This section describes the problems that current non-MPLS BIER encapsulation faces, and explains the need for a non-MPLS BIER-IPv6 encapsulation for IPv6 networks.</t>
       
-      <t>Below is a simple scenario that needs BIER IPv6-based forwarding:</t>
+      <t>Below is a simple scenario that needs BIER to replicate c-multicast packets from a BFIR to BFERs across an IPv6 Service Provider core.</t>
 
       <t><figure align="center">
           <artwork><![CDATA[      
@@ -154,16 +151,26 @@
       ]]></artwork>
         </figure></t>
 
-      <t>This scenario depicts the need to replicate BIER packets from a
-      BFIR to BFERs across an IPv6 Service Provider core.   
-	  Inside the IPv6 network, the BIER header is used to direct the packet from one BFR to the next BFRs, 
-	  and either IPv6 header or Ethernet header is used to provide reachability between BFRs.
-	  The IPv6 environment may include a variety of link types, may be entirely IPv6, 
-	  or may be dual stack. There may be cases where not all routers 
-	  are BFR capable in the IPv6 environment but still want to deploy BIER.
-	  Regardless of the environment, the problem is to deploy BIER in a non-MPLS IPv6 network.
-      </t>
-      
+      <t>The IPv6 environment may include a variety of link types, and the non-MPLS BIER encapsulation 
+         with only Ethernet transport (as defined in RFC8296, using Ethertype 0xAB37) can not be deployed 
+         in such environment. </t>
+
+      <t>There may be cases where not all routers are BFR capable in the IPv6 environment but still want to deploy BIER, 
+         and the non-MPLS BIER encapsulation with only Ethernet transport can not be deployed in such environment. </t>
+		 
+      <t>There may be cases the IPv6 network with some link having limited MTU (for example, 1280 bytes),  
+         and there is IPv6 c-multicast packets with 1280 bytes length need to be transported through using BIER.
+         The non-MPLS BIER encapsulation with Ethernet transport alone can not be deployed in such environment. </t>
+	  
+       <t>These may not be the exhausted scenarios that current non-MPLS BIER encapsulation (with only Ethernet transport) faces.
+         BIER aided by IPv6 encapsulation may be a candidate solution to these problems in non-MPLS IPv6 networks.</t>
+	  
+       <t>Also, with IPv6 encapsulation increasingly used for unicast services like VPN or L2VPN, 
+	  It may also be desired to have BIER deployments, for multicast services such as MVPN, 
+	  using some form of IPv6 encapsulation, to unify and simplify the operation and maintenance. </t>
+	  
+       <t>Altogether, the industry preference to use non-MPLS BIER for multicast service in some IPv6 networks, 
+	  and the problems current Non-MPLS BIER encapsulation faces, lead to the need for BIER IPv6 encapsulation and solution.</t>
     </section>
 
     <section title="Conceptual Models For BIER IPv6 Encapsulation and Forwarding">
